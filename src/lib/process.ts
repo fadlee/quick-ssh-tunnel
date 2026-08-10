@@ -30,7 +30,9 @@ function pidMatches(pid: number, connection: Connection): boolean {
     return (
       command.includes("ssh") &&
       command.includes(
-        `${connection.port}:${connection.remoteHost}:${connection.port}`,
+        connection.mode === "socks5"
+          ? `-D ${connection.port}`
+          : `${connection.port}:${connection.remoteHost}:${connection.port}`,
       ) &&
       command.includes(connection.sshTarget)
     );
@@ -40,7 +42,9 @@ function pidMatches(pid: number, connection: Connection): boolean {
 }
 
 export function processSpec(connection: Connection): string {
-  return `${connection.port}:${connection.remoteHost}:${connection.port}`;
+  return connection.mode === "socks5"
+    ? `-D ${connection.port}`
+    : `${connection.port}:${connection.remoteHost}:${connection.port}`;
 }
 
 export function getStatus(connection: Connection): Status {

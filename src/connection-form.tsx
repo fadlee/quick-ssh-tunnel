@@ -23,6 +23,7 @@ type Props = {
 };
 
 type Values = {
+  mode: "forward" | "socks5";
   sshTarget: string;
   port: string;
   remoteHost: string;
@@ -31,6 +32,9 @@ type Values = {
 
 export default function ConnectionForm({ initial, onConnected }: Props) {
   const { pop } = useNavigation();
+  const [mode, setMode] = useState<"forward" | "socks5">(
+    initial?.mode ?? "forward",
+  );
   const [errors, setErrors] = useState<Partial<Record<keyof Values, string>>>(
     {},
   );
@@ -38,9 +42,10 @@ export default function ConnectionForm({ initial, onConnected }: Props) {
   async function submit(values: Values) {
     const connection: Connection = {
       id: initial?.id ?? newId(),
+      mode: values.mode,
       sshTarget: values.sshTarget.trim(),
       port: Number(values.port.trim()),
-      remoteHost: values.remoteHost.trim() || "127.0.0.1",
+      remoteHost: values.remoteHost?.trim() || "127.0.0.1",
       compression: values.compression,
       lastUsedAt: Date.now(),
     };
@@ -95,6 +100,15 @@ export default function ConnectionForm({ initial, onConnected }: Props) {
         </ActionPanel>
       }
     >
+      <Form.Dropdown
+        id="mode"
+        title="Tunnel Type"
+        value={mode}
+        onChange={(value) => setMode(value as "forward" | "socks5")}
+      >
+        <Form.Dropdown.Item value="forward" title="Local Port Forwarding" />
+        <Form.Dropdown.Item value="socks5" title="SOCKS5 Proxy" />
+      </Form.Dropdown>
       <Form.TextField
         id="sshTarget"
         title="SSH Target"
@@ -116,24 +130,26 @@ export default function ConnectionForm({ initial, onConnected }: Props) {
           setErrors((current) => ({ ...current, port: undefined }))
         }
       />
-      <Form.TextField
-        id="remoteHost"
-        title="Remote Host"
-        placeholder="127.0.0.1"
-        info="Host ini dilihat dari sisi server SSH."
-        defaultValue={initial?.remoteHost ?? "127.0.0.1"}
-        error={errors.remoteHost}
-        onChange={() =>
-          setErrors((current) => ({ ...current, remoteHost: undefined }))
-        }
-      />
+      {mode === "forward" && (
+        <Form.TextField
+          id="remoteHost"
+          title="Remote Host"
+          placeholder="127.0.0.1"
+          info="Host ini dilihat dari sisi server SSH."
+          defaultValue={initial?.remoteHost ?? "127.0.0.1"}
+          error={errors.remoteHost}
+          onChange={() =>
+            setErrors((current) => ({ ...current, remoteHost: undefined }))
+          }
+        />
+      )}
       <Form.Checkbox
         id="compression"
         title="Compression"
         label="Enable SSH compression"
         defaultValue={initial?.compression ?? true}
       />
-      <Form.Description text="Authentication memakai ~/.ssh/config dan ssh-agent. Password tidak didukung." />
+      <Form.Description text="SOCKS5 membuka proxy di localhost:port. Authentication memakai ~/.ssh/config dan ssh-agent. Password tidak didukung." />
     </Form>
   );
 }

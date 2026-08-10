@@ -184,6 +184,9 @@ export default function QuickSshTunnel() {
               }
             : {},
           running ? { text: `PID ${getPid(connection)}` } : { text: "recent" },
+          connection.mode === "socks5"
+            ? { tag: { value: "SOCKS5", color: Color.Blue } }
+            : {},
         ]}
         actions={actions(connection, running)}
       />

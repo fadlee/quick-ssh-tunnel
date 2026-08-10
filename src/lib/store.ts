@@ -6,6 +6,7 @@ import { connectionKey } from "./core";
 
 export type Connection = {
   id: string;
+  mode: "forward" | "socks5";
   sshTarget: string;
   port: number;
   remoteHost: string;

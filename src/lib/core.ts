@@ -3,11 +3,12 @@ import type { Connection } from "./store";
 const HOST_PATTERN = /^[A-Za-z0-9][A-Za-z0-9.-]*$/;
 
 export function buildArgs(connection: Connection): string[] {
-  const args = [
-    "-N",
-    "-L",
-    `${connection.port}:${connection.remoteHost}:${connection.port}`,
-  ];
+  const args = ["-N", connection.mode === "socks5" ? "-D" : "-L"];
+  args.push(
+    connection.mode === "socks5"
+      ? String(connection.port)
+      : `${connection.port}:${connection.remoteHost}:${connection.port}`,
+  );
   if (connection.compression) args.push("-C");
   args.push(
     "-o",
@@ -25,6 +26,7 @@ export function buildArgs(connection: Connection): string[] {
 
 export function connectionKey(connection: Connection): string {
   return JSON.stringify([
+    connection.mode,
     connection.sshTarget,
     connection.port,
     connection.remoteHost,
@@ -33,7 +35,7 @@ export function connectionKey(connection: Connection): string {
 }
 
 export function validateConnection(
-  connection: Pick<Connection, "sshTarget" | "port" | "remoteHost">,
+  connection: Pick<Connection, "mode" | "sshTarget" | "port" | "remoteHost">,
 ): string[] {
   const errors: string[] = [];
   if (!connection.sshTarget.trim()) {
@@ -52,8 +54,8 @@ export function validateConnection(
     errors.push("Port harus berupa angka 1–65535");
   }
   if (
-    !connection.remoteHost.trim() ||
-    !HOST_PATTERN.test(connection.remoteHost)
+    connection.mode !== "socks5" &&
+    (!connection.remoteHost.trim() || !HOST_PATTERN.test(connection.remoteHost))
   ) {
     errors.push("Remote host harus berupa IP atau hostname sederhana");
   }
@@ -61,7 +63,9 @@ export function validateConnection(
 }
 
 export function formatConnection(
-  connection: Pick<Connection, "sshTarget" | "port" | "remoteHost">,
+  connection: Pick<Connection, "mode" | "sshTarget" | "port" | "remoteHost">,
 ): string {
-  return `${connection.sshTarget} · ${connection.port} → ${connection.remoteHost}`;
+  return connection.mode === "socks5"
+    ? `${connection.sshTarget} · SOCKS5 · ${connection.port}`
+    : `${connection.sshTarget} · ${connection.port} → ${connection.remoteHost}`;
 }
