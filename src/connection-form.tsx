@@ -19,6 +19,7 @@ import {
 
 type Props = {
   initial?: Connection;
+  prefillSshTarget?: string;
   onConnected: () => void;
 };
 
@@ -30,7 +31,11 @@ type Values = {
   compression: boolean;
 };
 
-export default function ConnectionForm({ initial, onConnected }: Props) {
+export default function ConnectionForm({
+  initial,
+  prefillSshTarget,
+  onConnected,
+}: Props) {
   const { pop } = useNavigation();
   const [mode, setMode] = useState<"forward" | "socks5">(
     initial?.mode ?? "forward",
@@ -113,7 +118,7 @@ export default function ConnectionForm({ initial, onConnected }: Props) {
         id="sshTarget"
         title="SSH Target"
         placeholder="user@host atau alias ~/.ssh/config"
-        defaultValue={initial?.sshTarget}
+        defaultValue={initial?.sshTarget ?? prefillSshTarget}
         error={errors.sshTarget}
         onChange={() =>
           setErrors((current) => ({ ...current, sshTarget: undefined }))

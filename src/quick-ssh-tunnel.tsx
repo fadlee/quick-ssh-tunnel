@@ -44,6 +44,7 @@ function displayConnections(): { active: Connection[]; recent: Connection[] } {
 export default function QuickSshTunnel() {
   const { push } = useNavigation();
   const [connections, setConnections] = useState(displayConnections);
+  const [searchText, setSearchText] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
   const refresh = useCallback(() => {
@@ -62,7 +63,14 @@ export default function QuickSshTunnel() {
       title="New Connection"
       icon={Icon.Plus}
       shortcut={{ modifiers: ["cmd"], key: "n" }}
-      onAction={() => push(<ConnectionForm onConnected={refresh} />)}
+      onAction={() =>
+        push(
+          <ConnectionForm
+            prefillSshTarget={searchText.trim() || undefined}
+            onConnected={refresh}
+          />,
+        )
+      }
     />
   );
 
@@ -196,12 +204,19 @@ export default function QuickSshTunnel() {
   return (
     <List
       isLoading={isLoading}
+      searchText={searchText}
+      onSearchTextChange={setSearchText}
+      filtering
       searchBarPlaceholder="Cari server atau remote host"
     >
       <List.EmptyView
         icon={Icon.Network}
         title="Belum ada koneksi"
-        description="Buat koneksi SSH pertama tanpa menyimpan konfigurasi manual."
+        description={
+          searchText.trim()
+            ? `Buat koneksi baru untuk “${searchText.trim()}”. Tekan Enter untuk melanjutkan.`
+            : "Buat koneksi SSH pertama tanpa menyimpan konfigurasi manual."
+        }
         actions={<ActionPanel>{newConnection}</ActionPanel>}
       />
       {connections.active.length > 0 && (
