@@ -1,0 +1,39 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "quick-ssh-tunnel",
+  "title": "Quick SSH Tunnel",
+  "description": "Connect and manage SSH tunnels without saved configuration.",
+  "icon": "command-icon.png",
+  "author": "fadlee",
+  "categories": [
+    "Developer Tools"
+  ],
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "quick-ssh-tunnel",
+      "title": "Quick SSH Tunnel",
+      "subtitle": "SSH Tunnels",
+      "description": "Connect to an SSH tunnel and reconnect recent servers.",
+      "mode": "view"
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.78.0",
+    "@raycast/utils": "^1.16.0"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^1.0.11",
+    "@types/node": "^20.11.0",
+    "@types/react": "^19.0.10",
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.4",
+    "typescript": "^5.3.3"
+  },
+  "scripts": {
+    "build": "ray build -e dist",
+    "dev": "ray develop",
+    "lint": "ray lint",
+    "fix-lint": "ray lint --fix"
+  }
+}
