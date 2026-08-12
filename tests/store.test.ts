@@ -27,6 +27,7 @@ describe("connection history", () => {
     for (let i = 0; i < 51; i += 1) {
       store.saveConnection({
         id: String(i),
+        mode: "forward",
         sshTarget: `user@host-${i}`,
         port: 1000 + i,
         remoteHost: "127.0.0.1",
@@ -39,5 +40,28 @@ describe("connection history", () => {
     expect(connections).toHaveLength(50);
     expect(connections[0].id).toBe("50");
     expect(connections.at(-1).id).toBe("1");
+  });
+
+  test("clones a connection with a new ID and no history write", () => {
+    const store = freshStore();
+    const original = {
+      id: "original",
+      mode: "socks5" as const,
+      sshTarget: "dev@example.com",
+      port: 1080,
+      remoteHost: "127.0.0.1",
+      compression: true,
+      lastUsedAt: 10,
+    };
+
+    const clone = store.cloneConnection(original);
+
+    expect(clone).toMatchObject({
+      ...original,
+      id: expect.any(String),
+      lastUsedAt: expect.any(Number),
+    });
+    expect(clone.id).not.toBe(original.id);
+    expect(store.loadConnections()).toEqual([]);
   });
 });

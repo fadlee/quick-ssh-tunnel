@@ -37,6 +37,10 @@ export function newId(): string {
   return crypto.randomUUID();
 }
 
+export function cloneConnection(connection: Connection): Connection {
+  return { ...connection, id: newId(), lastUsedAt: Date.now() };
+}
+
 export function loadConnections(): Connection[] {
   ensureDir();
   try {

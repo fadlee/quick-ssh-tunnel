@@ -22,6 +22,7 @@ import {
 } from "./lib/process";
 import {
   Connection,
+  cloneConnection,
   loadConnections,
   removeConnection,
   saveConnection,
@@ -156,6 +157,19 @@ export default function QuickSshTunnel() {
             onAction={() =>
               push(
                 <ConnectionForm initial={connection} onConnected={refresh} />,
+              )
+            }
+          />
+          <Action
+            title="Clone and Connect"
+            icon={Icon.Duplicate}
+            shortcut={{ modifiers: ["cmd"], key: "d" }}
+            onAction={() =>
+              push(
+                <ConnectionForm
+                  initial={cloneConnection(connection)}
+                  onConnected={refresh}
+                />,
               )
             }
           />
