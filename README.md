@@ -212,6 +212,155 @@ Select a stopped item in **Recent Connections** and choose **Connect**. The save
 
 If the connection is already active, Quick SSH Tunnel does not start a second process. It reports that the tunnel is already running.
 
+## Realistic Use Cases
+
+### Preview a development server running on a remote machine
+
+A common remote-development workflow is to run the application on a cloud VM, remote workstation, or shared development server while opening it in the browser on your Mac.
+
+Suppose the development server is running on the remote machine at `127.0.0.1:3000`:
+
+```text
+Remote machine: 127.0.0.1:3000
+Local browser:  http://localhost:3000
+```
+
+Create a **Local Port Forwarding** connection with:
+
+- **SSH Target:** `dev-box` (or `user@dev.example.com`)
+- **Port:** `3000`
+- **Remote Host:** `127.0.0.1`
+- **Compression:** enabled or disabled according to your project
+
+This creates the equivalent of:
+
+```bash
+ssh -N -L 3000:127.0.0.1:3000 dev-box
+```
+
+Now open `http://localhost:3000` locally. Requests travel through SSH to the remote development server, so the app can remain private and bound to the remote loopback interface.
+
+This works well for:
+
+- Vite, Next.js, Rails, Django, and other development servers
+- Storybook previews
+- Remote frontend development on a GPU or high-powered workstation
+- Reviewing a branch on a shared development VM
+- Testing a service that should not be exposed publicly
+
+The application must be running on the remote machine, and the SSH user must be able to reach the configured **Remote Host** and port. If the app is bound to a different interface or port, use that address as the remote host and the matching port in the form.
+
+### Access a remote database from local tools
+
+Run a database client on your Mac while the database stays private on the remote network.
+
+Example: PostgreSQL is reachable from the SSH server at `127.0.0.1:5432`:
+
+- **Tunnel Type:** Local Port Forwarding
+- **SSH Target:** `staging-db`
+- **Port:** `5432`
+- **Remote Host:** `127.0.0.1`
+
+Connect your local client to:
+
+```text
+Host: localhost
+Port: 5432
+```
+
+Your local port does not need to be the same as the database port if you need to avoid a conflict. The current form intentionally uses one port for both sides, so choose an unused matching port or use **Clone and Connect** to create another connection with a different port.
+
+The same pattern works for MySQL, Redis, MongoDB, and other TCP services that are reachable from the SSH server.
+
+### Reach an internal service through a bastion host
+
+If an internal service is only reachable from a bastion or jump host, define the route in `~/.ssh/config`:
+
+```sshconfig
+Host staging-api
+    HostName bastion.example.com
+    User deploy
+    IdentityFile ~/.ssh/id_ed25519
+    ProxyJump jump.example.com
+```
+
+Then forward the internal service without exposing it to the public internet:
+
+- **SSH Target:** `staging-api`
+- **Port:** `8080`
+- **Remote Host:** `internal-api`
+
+Open the service locally at:
+
+```text
+http://localhost:8080
+```
+
+The remote host is resolved from the SSH connection's point of view. It can therefore be a private DNS name or address that is unavailable on your Mac.
+
+### Inspect private dashboards and admin panels
+
+Use local port forwarding to inspect a private Grafana, Prometheus, Argo CD, Jenkins, or internal admin panel from a local browser:
+
+```text
+SSH Target: ops-bastion
+Port: 9090
+Remote Host: monitoring.internal
+```
+
+Then browse to:
+
+```text
+http://localhost:9090
+```
+
+This keeps the dashboard private and avoids opening a temporary firewall rule or public ingress route.
+
+### Browse several internal services through one SOCKS5 tunnel
+
+When you need access to multiple destinations rather than one fixed port, create a **SOCKS5 Proxy** connection:
+
+- **SSH Target:** `corp-vpn-host`
+- **Port:** `1080`
+
+Configure a browser or other SOCKS5-aware application to use:
+
+```text
+SOCKS5 localhost:1080
+```
+
+This is useful for:
+
+- Internal websites and dashboards
+- Private package registries
+- Services reachable only from a corporate network
+- Testing a site from the network location of a remote machine
+
+A SOCKS5 tunnel is application-specific. Configure only the applications that should use it, and verify their DNS behavior if private hostnames must also resolve through the remote network.
+
+### Test a webhook receiver on a remote environment
+
+If a webhook receiver runs on a remote development environment, forward its HTTP port to your Mac and test it with local tools:
+
+```text
+SSH Target: webhook-dev
+Port: 4000
+Remote Host: 127.0.0.1
+```
+
+Use `http://localhost:4000` with a local API client or test script. This is useful for reproducing integration issues without making the receiver publicly accessible.
+
+### Use a remote machine's private service from scripts
+
+Forward a service once, then point local command-line tools at `localhost`:
+
+```bash
+# Example: a local CLI talking to a remote service
+curl http://localhost:8080/health
+```
+
+This works well for health checks, migration tools, local dashboards, and one-off debugging scripts. Stop the tunnel when the session is complete so the local port is not left open unintentionally.
+
 ## Keyboard Shortcuts
 
 | Shortcut | Action                                      |
