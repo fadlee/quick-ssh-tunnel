@@ -138,6 +138,19 @@ export default function QuickSshTunnel() {
       <ActionPanel>
         <ActionPanel.Submenu title="Connection Actions" icon={Icon.List}>
           <Action
+            title="Clone and Connect"
+            icon={Icon.Duplicate}
+            shortcut={{ modifiers: ["cmd"], key: "d" }}
+            onAction={() =>
+              push(
+                <ConnectionForm
+                  initial={cloneConnection(connection)}
+                  onConnected={refresh}
+                />,
+              )
+            }
+          />
+          <Action
             title={active ? "Stop Tunnel" : "Connect"}
             icon={active ? Icon.Stop : Icon.Plug}
             shortcut={{ modifiers: [], key: "space" }}
@@ -157,19 +170,6 @@ export default function QuickSshTunnel() {
             onAction={() =>
               push(
                 <ConnectionForm initial={connection} onConnected={refresh} />,
-              )
-            }
-          />
-          <Action
-            title="Clone and Connect"
-            icon={Icon.Duplicate}
-            shortcut={{ modifiers: ["cmd"], key: "d" }}
-            onAction={() =>
-              push(
-                <ConnectionForm
-                  initial={cloneConnection(connection)}
-                  onConnected={refresh}
-                />,
               )
             }
           />
