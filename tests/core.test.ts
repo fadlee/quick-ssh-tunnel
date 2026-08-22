@@ -3,6 +3,7 @@ import {
   buildArgs,
   connectionKey,
   formatConnection,
+  formatSshCommand,
   validateConnection,
 } from "../src/lib/core";
 import type { Connection } from "../src/lib/store";
@@ -87,6 +88,17 @@ describe("Quick SSH connection", () => {
     );
     expect(formatConnection({ ...base, mode: "socks5", port: 1080 })).toBe(
       "dev@example.com · SOCKS5 · 1080",
+    );
+  });
+  test("formats a runnable SSH command for local forwarding", () => {
+    expect(formatSshCommand(base)).toBe(
+      "ssh -N -L 5432:127.0.0.1:5432 -C -o BatchMode=yes -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 -o ServerAliveCountMax=3 dev@example.com",
+    );
+  });
+
+  test("shell-quotes unsafe SSH targets in copied commands", () => {
+    expect(formatSshCommand({ ...base, sshTarget: "dev;echo unsafe" })).toContain(
+      "'dev;echo unsafe'",
     );
   });
 });

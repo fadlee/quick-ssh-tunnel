@@ -24,6 +24,16 @@ export function buildArgs(connection: Connection): string[] {
   return args;
 }
 
+function shellQuote(value: string): string {
+  return /^[A-Za-z0-9_./:@=-]+$/.test(value)
+    ? value
+    : `'${value.replaceAll("'", "'\\''")}'`;
+}
+
+export function formatSshCommand(connection: Connection): string {
+  return ["ssh", ...buildArgs(connection)].map(shellQuote).join(" ");
+}
+
 export function connectionKey(connection: Connection): string {
   return JSON.stringify([
     connection.mode,

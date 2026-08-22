@@ -12,7 +12,7 @@ import {
 } from "@raycast/api";
 import { useCallback, useEffect, useState } from "react";
 import ConnectionForm from "./connection-form";
-import { formatConnection } from "./lib/core";
+import { formatConnection, formatSshCommand } from "./lib/core";
 import {
   getPid,
   getStatus,
@@ -163,6 +163,11 @@ export default function QuickSshTunnel() {
               shortcut={{ modifiers: ["cmd"], key: "." }}
             />
           )}
+          <Action.CopyToClipboard
+            title="Copy Ssh Command"
+            content={formatSshCommand(connection)}
+            shortcut={{ modifiers: ["cmd", "shift"], key: "c" }}
+          />
           <Action
             title="Edit and Connect"
             icon={Icon.Pencil}
