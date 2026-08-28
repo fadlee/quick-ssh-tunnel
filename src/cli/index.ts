@@ -175,10 +175,7 @@ async function main(): Promise<void> {
   const selectedId = await p.autocomplete({
     message: "Search tunnel or create new:",
     placeholder: "Type to filter target, port, or host...",
-    options: [
-      { value: "new", label: "➕ Create New Tunnel" },
-      ...choices,
-    ],
+    options: [{ value: "new", label: "➕ Create New Tunnel" }, ...choices],
   });
   if (p.isCancel(selectedId)) {
     p.outro("Goodbye!");
@@ -196,6 +193,8 @@ async function main(): Promise<void> {
 }
 
 main().catch((err) => {
-  p.outro(`Unexpected error: ${err instanceof Error ? err.message : String(err)}`);
+  p.outro(
+    `Unexpected error: ${err instanceof Error ? err.message : String(err)}`,
+  );
   process.exit(1);
 });

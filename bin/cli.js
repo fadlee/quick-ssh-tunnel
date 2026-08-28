@@ -1769,10 +1769,7 @@ async function main() {
   const selectedId = await autocomplete({
     message: "Search tunnel or create new:",
     placeholder: "Type to filter target, port, or host...",
-    options: [
-      { value: "new", label: "\u2795 Create New Tunnel" },
-      ...choices
-    ]
+    options: [{ value: "new", label: "\u2795 Create New Tunnel" }, ...choices]
   });
   if (isCancel(selectedId)) {
     outro("Goodbye!");
@@ -1788,6 +1785,8 @@ async function main() {
   }
 }
 main().catch((err) => {
-  outro(`Unexpected error: ${err instanceof Error ? err.message : String(err)}`);
+  outro(
+    `Unexpected error: ${err instanceof Error ? err.message : String(err)}`
+  );
   process.exit(1);
 });
