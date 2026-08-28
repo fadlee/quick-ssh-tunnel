@@ -43,7 +43,8 @@
     "build:cli": "esbuild src/cli/index.ts --bundle --platform=node --target=node18 --outfile=bin/cli.js --banner:js=\"#!/usr/bin/env node\"",
     "dev": "ray develop",
     "lint": "ray lint",
-    "fix-lint": "ray lint --fix"
+    "fix-lint": "ray lint --fix",
+    "publish:raycast": "npx @raycast/api@latest publish"
   },
   "version": "1.0.1"
 }
