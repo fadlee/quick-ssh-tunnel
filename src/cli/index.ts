@@ -92,7 +92,6 @@ async function connectionFormFlow(
     return;
   }
 
-  saveConnection(connection);
   const s = p.spinner();
   s.start("Connecting tunnel...");
   try {
@@ -100,6 +99,7 @@ async function connectionFormFlow(
       await stopTunnel(initial);
     }
     await startTunnel(connection);
+    saveConnection(connection);
     s.stop("Tunnel started successfully! 🟢");
   } catch (err) {
     s.stop("Failed to start tunnel 🔴");
