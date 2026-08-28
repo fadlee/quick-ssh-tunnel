@@ -6,6 +6,10 @@ Quick SSH Tunnel is designed for short, repeatable workflows: choose an SSH targ
 
 ## Features
 
+- **CLI & Raycast Interoperable**: Use via Raycast GUI or `npx quick-ssh-tunnel` in your terminal with zero dependencies to download. State is 100% synchronized between both interfaces.
+- Interactive CLI with real-time fuzzy search, create, edit, clone, and connect flows.
+- Create SSH tunnels from Raycast or CLI with a compact form.
+
 - Create SSH tunnels from Raycast with a compact form.
 - Support for local port forwarding (`ssh -L`).
 - Support for SOCKS5 dynamic proxy tunnels (`ssh -D`).
@@ -30,9 +34,26 @@ Quick SSH Tunnel is designed for short, repeatable workflows: choose an SSH targ
 
 The extension does not provide an interactive terminal. Password prompts are not supported.
 
-## Installation
+## Installation & Usage
 
-### Install from a local checkout
+### Interactive CLI Mode (Zero Install)
+
+Run directly from any terminal without installing:
+
+```bash
+npx quick-ssh-tunnel
+```
+
+Or install globally via npm:
+
+```bash
+npm install -g quick-ssh-tunnel
+quick-ssh-tunnel
+```
+
+The CLI features interactive autocomplete search, SSH command copying, and full connection management (Connect, Disconnect, Edit, Clone, Delete).
+
+### Raycast Extension (macOS)
 
 1. Clone the repository:
 
