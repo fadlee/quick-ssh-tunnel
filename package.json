@@ -9,6 +9,13 @@
     "Developer Tools"
   ],
   "license": "MIT",
+  "bin": {
+    "quick-ssh-tunnel": "./bin/cli.js"
+  },
+  "files": [
+    "bin/cli.js",
+    "README.md"
+  ],
   "commands": [
     {
       "name": "quick-ssh-tunnel",
@@ -19,6 +26,7 @@
     }
   ],
   "dependencies": {
+    "@clack/prompts": "^1.7.0",
     "@raycast/api": "^1.78.0",
     "@raycast/utils": "^1.16.0"
   },
@@ -26,12 +34,14 @@
     "@raycast/eslint-config": "^1.0.11",
     "@types/node": "^20.11.0",
     "@types/react": "^19.0.10",
+    "esbuild": "^0.28.2",
     "eslint": "^8.56.0",
     "prettier": "^3.2.4",
     "typescript": "^5.3.3"
   },
   "scripts": {
-    "build": "ray build -e dist",
+    "build": "ray build -e dist && npm run build:cli",
+    "build:cli": "esbuild src/cli/index.ts --bundle --platform=node --target=node18 --outfile=bin/cli.js --banner:js=\"#!/usr/bin/env node\"",
     "dev": "ray develop",
     "lint": "ray lint",
     "fix-lint": "ray lint --fix"
