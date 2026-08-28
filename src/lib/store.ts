@@ -2,18 +2,10 @@ import crypto from "crypto";
 import fs from "fs";
 import os from "os";
 import path from "path";
+import type { Connection } from "./types";
 import { connectionKey } from "./core";
 
-export type Connection = {
-  id: string;
-  mode: "forward" | "socks5";
-  sshTarget: string;
-  port: number;
-  remoteHost: string;
-  compression: boolean;
-  lastUsedAt: number;
-};
-
+export type { Connection };
 type StateEntry = {
   pid: number;
   spec: string;

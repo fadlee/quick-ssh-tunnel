@@ -1,0 +1,23 @@
+# OSX
+.DS_Store
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Metro
+.metro-health-check*
+
+# Android / Gradle
+android/app/build/
+android/build/
+android/.gradle/
+android/app/.cxx/
+android/app/release/
+local.properties
+*.iml
+
+# Misc
+*.jks
+*.keystore

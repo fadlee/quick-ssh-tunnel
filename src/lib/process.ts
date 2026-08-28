@@ -2,7 +2,7 @@ import { execFileSync, spawn } from "child_process";
 import fs from "fs";
 import { buildArgs } from "./core";
 import { readState, updateState } from "./store";
-import type { Connection } from "./store";
+import type { Connection } from "./types";
 
 export type Status = "running" | "stopped";
 

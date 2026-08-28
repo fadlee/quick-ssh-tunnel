@@ -13,8 +13,8 @@ import {
   loadConnections,
   removeConnection,
   saveConnection,
-  type Connection,
 } from "../lib/store.js";
+import type { Connection } from "../lib/types.js";
 
 async function connectionFormFlow(
   initial?: Connection,

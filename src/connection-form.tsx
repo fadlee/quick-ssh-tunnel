@@ -10,12 +10,12 @@ import { useState } from "react";
 import { connectionKey, validateConnection } from "./lib/core";
 import { getStatus, startTunnel, stopTunnel } from "./lib/process";
 import {
-  Connection,
   findConnectionByKey,
   loadConnections,
   newId,
   saveConnection,
 } from "./lib/store";
+import type { Connection } from "./lib/types";
 
 type Props = {
   initial?: Connection;

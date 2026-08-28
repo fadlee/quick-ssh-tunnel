@@ -1,4 +1,4 @@
-import type { Connection } from "./store";
+import type { Connection } from "./types";
 
 const HOST_PATTERN = /^[A-Za-z0-9][A-Za-z0-9.-]*$/;
 

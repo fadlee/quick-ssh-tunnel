@@ -21,12 +21,12 @@ import {
   uptime,
 } from "./lib/process";
 import {
-  Connection,
   cloneConnection,
   loadConnections,
   removeConnection,
   saveConnection,
 } from "./lib/store";
+import type { Connection } from "./lib/types";
 
 function displayConnections(): { active: Connection[]; recent: Connection[] } {
   const connections = loadConnections().sort(

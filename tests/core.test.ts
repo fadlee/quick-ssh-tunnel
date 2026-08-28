@@ -6,7 +6,7 @@ import {
   formatSshCommand,
   validateConnection,
 } from "../src/lib/core";
-import type { Connection } from "../src/lib/store";
+import type { Connection } from "../src/lib/types";
 
 const base: Connection = {
   id: "one",
