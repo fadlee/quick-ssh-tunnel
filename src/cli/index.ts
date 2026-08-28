@@ -96,6 +96,9 @@ async function connectionFormFlow(
   const s = p.spinner();
   s.start("Connecting tunnel...");
   try {
+    if (initial && !isClone && getStatus(initial) === "running") {
+      await stopTunnel(initial);
+    }
     await startTunnel(connection);
     s.stop("Tunnel started successfully! 🟢");
   } catch (err) {
