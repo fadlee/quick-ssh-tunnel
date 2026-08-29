@@ -49,11 +49,14 @@ object SshTunnelManager {
                 session.setConfig("compression", "zlib@openssh.com,zlib,none")
             }
 
-            // UserInfo — key-based auth only; password prompts not implemented.
+            // Authentication — password or key-based
+            if (!connection.password.isNullOrEmpty()) {
+                session.setPassword(connection.password)
+            }
             session.userInfo = object : UserInfo {
                 override fun getPassphrase(): String? = null
-                override fun getPassword(): String? = null
-                override fun promptPassword(message: String?): Boolean = false
+                override fun getPassword(): String? = connection.password
+                override fun promptPassword(message: String?): Boolean = !connection.password.isNullOrEmpty()
                 override fun promptPassphrase(message: String?): Boolean = false
                 override fun promptYesNo(message: String?): Boolean = true
                 override fun showMessage(message: String?) {}

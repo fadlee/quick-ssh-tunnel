@@ -12,6 +12,7 @@ data class Connection(
     val remoteHost: String,
     val compression: Boolean,
     val lastUsedAt: Long,
+    val password: String? = null,
 )
 
 // ── Core logic — port of src/lib/core.ts ────────────────────────────────────

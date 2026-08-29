@@ -35,6 +35,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.quicksshtunnel.Connection
@@ -72,6 +73,7 @@ fun FormScreen(
     var remoteHost by remember { mutableStateOf(existing?.remoteHost ?: "127.0.0.1") }
     var compression by remember { mutableStateOf(existing?.compression ?: false) }
     var errors by remember { mutableStateOf<List<String>>(emptyList()) }
+    var password by remember { mutableStateOf(existing?.password ?: "") }
     var connecting by remember { mutableStateOf(false) }
 
     // Save & connect — declared before UI so it's visible in click handlers.
@@ -86,6 +88,7 @@ fun FormScreen(
             remoteHost = if (mode == ConnectionMode.SOCKS5) "127.0.0.1" else remoteHost.trim(),
             compression = compression,
             lastUsedAt = System.currentTimeMillis(),
+            password = password.ifBlank { null },
         )
 
         val validationErrors = validateConnection(conn)
@@ -194,6 +197,20 @@ fun FormScreen(
             placeholder = { Text("user@host or alias", color = TextSecondary, fontSize = 14.sp) },
             singleLine = true,
             shape = RoundedCornerShape(12.dp),
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // ── Password ───────────────────────────────────────────────────
+        FormLabel("Password (optional)")
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = { Text("SSH password (leave empty for key auth)", color = TextSecondary, fontSize = 14.sp) },
+            singleLine = true,
+            shape = RoundedCornerShape(12.dp),
+            visualTransformation = PasswordVisualTransformation(),
         )
 
         Spacer(modifier = Modifier.height(16.dp))
