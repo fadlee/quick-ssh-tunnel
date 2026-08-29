@@ -1,0 +1,3 @@
+-keep class com.jcraft.jsch.** { *; }
+-dontwarn com.jcraft.jzlib.**
+-dontwarn org.ietf.jgss.**
