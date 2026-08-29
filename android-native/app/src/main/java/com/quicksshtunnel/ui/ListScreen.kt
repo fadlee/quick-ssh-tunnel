@@ -57,8 +57,10 @@ import com.quicksshtunnel.SshTunnelManager
 import com.quicksshtunnel.TunnelService
 import com.quicksshtunnel.formatConnection
 import com.quicksshtunnel.formatSshCommand
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -241,14 +243,18 @@ fun ListScreen(
                 ) {
                     scope.launch {
                         if (running) {
-                            SshTunnelManager.stopTunnel(conn.id)
+                            withContext(Dispatchers.IO) {
+                                SshTunnelManager.stopTunnel(conn.id)
+                            }
                             if (SshTunnelManager.activeCount() == 0) {
                                 TunnelService.stop(context)
                             } else {
                                 TunnelService.updateNotification(context, SshTunnelManager.activeCount())
                             }
                         } else {
-                            val result = SshTunnelManager.startTunnel(conn)
+                            val result = withContext(Dispatchers.IO) {
+                                SshTunnelManager.startTunnel(conn)
+                            }
                             if (result.isSuccess) {
                                 TunnelService.start(context, SshTunnelManager.activeCount())
                             } else {
@@ -298,15 +304,19 @@ fun ListScreen(
             text = { Text("Remove \"${conn.sshTarget}\"? This cannot be undone.") },
             confirmButton = {
                 TextButton(onClick = {
-                    if (SshTunnelManager.isRunning(conn.id)) {
-                        SshTunnelManager.stopTunnel(conn.id)
-                        if (SshTunnelManager.activeCount() == 0) {
-                            TunnelService.stop(context)
+                    scope.launch {
+                        if (SshTunnelManager.isRunning(conn.id)) {
+                            withContext(Dispatchers.IO) {
+                                SshTunnelManager.stopTunnel(conn.id)
+                            }
+                            if (SshTunnelManager.activeCount() == 0) {
+                                TunnelService.stop(context)
+                            }
                         }
+                        ConnectionStore.removeConnection(context, conn.id)
+                        connections = ConnectionStore.loadConnections(context)
+                        showDeleteDialog = null
                     }
-                    ConnectionStore.removeConnection(context, conn.id)
-                    connections = ConnectionStore.loadConnections(context)
-                    showDeleteDialog = null
                 }) { Text("Delete", color = ErrorColor) }
             },
             dismissButton = {
