@@ -13,12 +13,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.NavHost
 import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.quicksshtunnel.ui.FormScreen
+import com.quicksshtunnel.ui.HelpScreen
 import com.quicksshtunnel.ui.ListScreen
 import com.quicksshtunnel.ui.QuickSshTunnelTheme
 
@@ -37,7 +38,6 @@ class MainActivity : ComponentActivity() {
 
     private fun requestStoragePermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            // Android 11+ — need MANAGE_EXTERNAL_STORAGE
             if (!Environment.isExternalStorageManager()) {
                 try {
                     val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
@@ -49,7 +49,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         } else {
-            // Android 10 and below
             val permissions = arrayOf(
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -71,7 +70,11 @@ fun AppNavHost() {
             ListScreen(
                 onNew = { navController.navigate("form") },
                 onEdit = { id -> navController.navigate("form?connectionId=$id") },
+                onHelp = { navController.navigate("help") },
             )
+        }
+        composable("help") {
+            HelpScreen(onBack = { navController.popBackStack() })
         }
         composable(
             route = "form?connectionId={connectionId}",

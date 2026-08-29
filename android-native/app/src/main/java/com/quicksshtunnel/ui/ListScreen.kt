@@ -21,8 +21,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.HelpOutline
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -67,6 +67,7 @@ import kotlinx.coroutines.withContext
 fun ListScreen(
     onNew: () -> Unit,
     onEdit: (String) -> Unit,
+    onHelp: () -> Unit,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -75,10 +76,8 @@ fun ListScreen(
     var searchQuery by remember { mutableStateOf("") }
     var selectedConnection by remember { mutableStateOf<Connection?>(null) }
     var showDeleteDialog by remember { mutableStateOf<Connection?>(null) }
-    // Bump to force re-sort / re-render on polling tick
     var pollTick by remember { mutableStateOf(0) }
 
-    // 3-second polling: reload connections and bump tick to re-check running status
     LaunchedEffect(Unit) {
         while (true) {
             delay(3000)
@@ -87,7 +86,6 @@ fun ListScreen(
         }
     }
 
-    // Sorted: running first, then by lastUsedAt desc
     val sortedConnections by remember(connections, pollTick) {
         derivedStateOf {
             connections.sortedWith(
@@ -116,7 +114,6 @@ fun ListScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
     ) {
-        // ── Header ───────────────────────────────────────────────────────
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -130,6 +127,14 @@ fun ListScreen(
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.weight(1f),
             )
+            IconButton(onClick = onHelp) {
+                Icon(
+                    imageVector = androidx.compose.material.icons.Icons.Default.HelpOutline,
+                    contentDescription = "Help",
+                    tint = TextSecondary,
+                    modifier = Modifier.size(22.dp),
+                )
+            }
             IconButton(onClick = onNew) {
                 Box(
                     modifier = Modifier
@@ -139,7 +144,7 @@ fun ListScreen(
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Add,
+                        imageVector = androidx.compose.material.icons.Icons.Default.Add,
                         contentDescription = "New connection",
                         tint = Color.Black,
                         modifier = Modifier.size(22.dp),
@@ -148,7 +153,6 @@ fun ListScreen(
             }
         }
 
-        // ── Search bar ───────────────────────────────────────────────────
         OutlinedTextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
@@ -159,7 +163,7 @@ fun ListScreen(
                 Text("Search connections…", color = TextSecondary, fontSize = 14.sp)
             },
             leadingIcon = {
-                Icon(Icons.Default.Search, contentDescription = null, tint = TextSecondary)
+                Icon(androidx.compose.material.icons.Icons.Default.Search, contentDescription = null, tint = TextSecondary)
             },
             singleLine = true,
             shape = RoundedCornerShape(12.dp),
@@ -167,7 +171,6 @@ fun ListScreen(
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        // ── List ─────────────────────────────────────────────────────────
         if (filtered.isEmpty()) {
             Box(
                 modifier = Modifier
@@ -209,7 +212,6 @@ fun ListScreen(
         }
     }
 
-    // ── Action bottom sheet ──────────────────────────────────────────────
     selectedConnection?.let { conn ->
         val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
         val running = SshTunnelManager.isRunning(conn.id)
@@ -296,7 +298,6 @@ fun ListScreen(
         }
     }
 
-    // ── Delete confirmation ──────────────────────────────────────────────
     showDeleteDialog?.let { conn ->
         AlertDialog(
             onDismissRequest = { showDeleteDialog = null },
