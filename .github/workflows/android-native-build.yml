@@ -40,13 +40,38 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x android-native/gradlew
 
+      - name: Generate signing keystore
+        working-directory: android-native
+        run: |
+          keytool -genkeypair \
+            -v \
+            -keystore debug.keystore \
+            -alias androiddebugkey \
+            -dname "CN=QuickSSHTunnel, OU=Dev, O=Dev, L=ID, ST=ID, C=ID" \
+            -storepass android \
+            -keypass android \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000
+
       - name: Build release APK
         working-directory: android-native
+        env:
+          KEYSTORE_FILE: ${{ github.workspace }}/android-native/debug.keystore
+          KEYSTORE_PASSWORD: android
+          KEY_ALIAS: androiddebugkey
+          KEY_PASSWORD: android
         run: ./gradlew assembleRelease --no-daemon --stacktrace
+
+      - name: Build debug APK (fallback)
+        working-directory: android-native
+        run: ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: quick-ssh-tunnel-native-apk
-          path: android-native/app/build/outputs/apk/release/*.apk
+          path: |
+            android-native/app/build/outputs/apk/release/*.apk
+            android-native/app/build/outputs/apk/debug/*.apk
           retention-days: 30
