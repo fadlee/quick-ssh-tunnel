@@ -15,7 +15,6 @@ const sharedLib = path.resolve(parentRoot, "src", "lib");
  */
 module.exports = (async () => {
   const defaultConfig = await getDefaultConfig(projectRoot);
-  const defaultResolver = defaultConfig.resolver.resolveRequest;
 
   const config = {
     watchFolders: [parentRoot],
@@ -30,9 +29,9 @@ module.exports = (async () => {
             /^@shared\//,
             sharedLib + "/",
           );
-          return defaultResolver(context, rewritten, platform);
+          return context.resolveRequest(context, rewritten, platform);
         }
-        return defaultResolver(context, moduleName, platform);
+        return context.resolveRequest(context, moduleName, platform);
       },
     },
   };
