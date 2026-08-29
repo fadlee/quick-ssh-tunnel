@@ -51,6 +51,7 @@ dependencies {
 
     // AndroidX core for foreground service helpers
     implementation "androidx.core:core-ktx:1.13.1"
+    implementation "androidx.appcompat:appcompat:1.7.0"
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
 }
