@@ -79,9 +79,11 @@ class SshTunnelModule(private val reactContext: ReactApplicationContext) :
 
             when (mode) {
                 "socks5" -> {
-                    // Dynamic port forwarding (-D)
-                    session.setPortForwardingD(port)
-                    Log.i(TAG, "SOCKS5 tunnel started on :$port via $user@$actualHost")
+                    // Dynamic port forwarding (-D) is not supported by JSch 0.1.55.
+                    // JSch lacks a built-in SOCKS proxy server implementation.
+                    promise.reject("SOCKS5_NOT_SUPPORTED", "Dynamic port forwarding (SOCKS5) is not supported by JSch. Use local port forwarding (-L) instead.")
+                    session.disconnect()
+                    return
                 }
                 else -> {
                     // Local port forwarding (-L port:remoteHost:port)
@@ -133,7 +135,7 @@ class SshTunnelModule(private val reactContext: ReactApplicationContext) :
 
     @ReactMethod
     fun getRunningTunnels(promise: Promise) {
-        val ids = Arguments.fromArrayList(ArrayList(sessions.keys))
+        val ids = Arguments.fromList(ArrayList(sessions.keys))
         promise.resolve(ids)
     }
 
@@ -151,7 +153,7 @@ class SshTunnelModule(private val reactContext: ReactApplicationContext) :
     private fun parseHostPort(host: String): Pair<String, Int> {
         val parts = host.split(":", limit = 2)
         return if (parts.size == 2) {
-            parts[0] to parts[1].toIntOrNull() ?: 22
+            parts[0] to (parts[1].toIntOrNull() ?: 22)
         } else {
             host to 22
         }

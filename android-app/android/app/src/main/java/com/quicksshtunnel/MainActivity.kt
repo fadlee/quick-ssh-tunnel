@@ -14,7 +14,7 @@ class MainActivity : ReactActivity() {
         return DefaultReactActivityDelegate(
             this,
             mainComponentName,
-            DefaultNewArchitectureEntryPoint.getFabricEnabled(),
+            DefaultNewArchitectureEntryPoint.fabricEnabled,
         )
     }
 
